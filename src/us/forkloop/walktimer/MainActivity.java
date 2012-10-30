@@ -6,9 +6,11 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
+import android.widget.Chronometer;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -17,14 +19,13 @@ import android.widget.ToggleButton;
 public class MainActivity extends Activity {
 
     private final static long DISTANCE = 50;
-    private final static String DEFAULT_STRING = "0 s";
     private final static int TOTAL_ADJUST = 10;
     private final static double THRESHOLD = 1.0;
     private static boolean isUpdate = true;
 
-    private TextView timeView;
+    private TextView distanceView;
     private EditText editText;
-    private long startTime;
+    private Chronometer chronometer;
     private double aimingDistance;
     private Location previousLocation;
     private int adjustCount;
@@ -36,10 +37,11 @@ public class MainActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        
+
         editText = (EditText) findViewById(R.id.distance);
-        timeView = (TextView) findViewById(R.id.time);
-        
+        distanceView = (TextView) findViewById(R.id.walk_distance);
+        chronometer = (Chronometer) findViewById(R.id.chronometer);
+
         locationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
         locationListener = new XLocationListener();
     }
@@ -53,7 +55,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onPause() {
         locationManager.removeUpdates(locationListener);
-        timeView.setText(DEFAULT_STRING);
+        distanceView.setText(getString(R.string.initial_distance));
         super.onPause();
     }
 
@@ -75,7 +77,7 @@ public class MainActivity extends Activity {
                 aimingDistance = DISTANCE;
             }
             Log.i(this.getClass().getSimpleName(), "Start to timing distance: " + aimingDistance);
-            timeView.setText("Waiting for GPS...");
+            distanceView.setText("Waiting for GPS...");
             previousLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
             if (previousLocation != null) {
                 Log.i(this.getClass().getSimpleName(), "latitude: " + previousLocation.getLatitude() + ", longitude: " + previousLocation.getLongitude());
@@ -86,7 +88,7 @@ public class MainActivity extends Activity {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
         } else {
             locationManager.removeUpdates(locationListener);
-            timeView.setText(DEFAULT_STRING);
+            distanceView.setText(getString(R.string.initial_distance));
         }
     }
 
@@ -107,17 +109,17 @@ public class MainActivity extends Activity {
                     isUpdate = false;
                     startLocation = location;
                     Log.i(this.getClass().getSimpleName(), "Start at: " + startLocation.getLatitude() + " : " + startLocation.getLongitude());
-                    timeView.setText("Starting...");
-                    startTime = System.currentTimeMillis();
+                    distanceView.setText("Starting...");
+                    chronometer.setBase(SystemClock.elapsedRealtime());
+                    chronometer.start();
                 }
                 previousLocation = location;
             } else {
                 double distance = location.distanceTo(startLocation);
-                timeView.setText(String.format("%.1f m", distance));
+                distanceView.setText(String.format("%.1f m", distance));
                 if (distance >= aimingDistance) {
-                    long endTime = System.currentTimeMillis();
-                    double totalTime = (endTime - startTime)/1000.0;
-                    timeView.setText(totalTime + " s");
+                    chronometer.stop();
+                    chronometer.setBase(SystemClock.elapsedRealtime());
                     locationManager.removeUpdates(locationListener);
                 }
             }
