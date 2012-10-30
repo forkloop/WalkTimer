@@ -116,7 +116,7 @@ public class MainActivity extends Activity {
                 previousLocation = location;
             } else {
                 double distance = location.distanceTo(startLocation);
-                distanceView.setText(String.format("%.1f m", distance));
+                distanceView.setText(String.format("%.1f", distance));
                 if (distance >= aimingDistance) {
                     chronometer.stop();
                     chronometer.setBase(SystemClock.elapsedRealtime());
