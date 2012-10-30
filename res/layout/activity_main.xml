@@ -1,0 +1,45 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#AEDDB3" >
+
+    <EditText
+        android:id = "@+id/distance"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:hint="@string/distance"
+    />
+
+    <TextView
+    android:id="@+id/time"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_centerHorizontal="true"
+    android:layout_centerVertical="true"
+    android:layout_marginBottom="20dp"
+    android:background="#6BC235"
+    android:textColor="#000000"
+    android:gravity="center_horizontal"
+    android:paddingBottom="10dp"
+    android:paddingLeft="60dp"
+    android:paddingRight="60dp"
+    android:paddingTop="10dp"
+    android:text="@string/initial_time"
+    android:textSize="30sp"
+    tools:context=".MainActivity" />
+
+    <ToggleButton 
+        android:id="@+id/start"
+        android:layout_width = "match_parent"
+        android:layout_height = "wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_below="@id/time"
+        android:background="#6BC235"
+        android:textSize="24sp"
+        android:textOn="@string/reset"
+        android:textOff = "@string/start"
+        android:onClick="onToggleClicked"
+    />
+</RelativeLayout>
